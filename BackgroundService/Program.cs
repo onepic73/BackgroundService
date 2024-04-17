@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using BackgroundService.Data;
 using BackgroundService.Hubs;
+using BackgroundService.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<BackgroundServiceContext>(options =>
@@ -11,8 +12,8 @@ builder.Services.AddDbContext<BackgroundServiceContext>(options =>
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddSignalR();
-builder.Services.AddSingleton<Match>();
-builder.Services.AddHostedService<Match>(p => p.GetService<Match>());
+builder.Services.AddSingleton<Game>();
+builder.Services.AddHostedService<Game>(p => p.GetService<Game>());
 
 builder.Services.AddCors(options =>
 {

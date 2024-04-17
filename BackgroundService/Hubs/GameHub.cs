@@ -1,4 +1,5 @@
 ﻿using BackgroundService.Data;
+using BackgroundService.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -8,22 +9,28 @@ namespace BackgroundService.Hubs
     [Authorize]
     public class GameHub : Hub
     {
-        public static Dictionary<string, int> Data = new();
+        public Game _game;
 
-        public GameHub()
+        public GameHub(Game game)
         {
-            
+            _game = game;
         }
 
         public override async Task OnConnectedAsync()
         {
             await base.OnConnectedAsync();
-            Data[Context.UserIdentifier!] = 0;
+            _game.AddUser(Context.UserIdentifier!);
+        }
+
+        public override async Task OnDisconnectedAsync(Exception? exception)
+        {
+            _game.RemoveUser(Context.UserIdentifier!);
+            await base.OnDisconnectedAsync(exception);
         }
 
         public void Increment()
         {
-            Data[Context.UserIdentifier!]++;
+            _game.Increment(Context.UserIdentifier!);
         }
     }
 }
