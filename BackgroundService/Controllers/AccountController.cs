@@ -1,4 +1,5 @@
 ﻿using BackgroundService.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -49,6 +50,20 @@ namespace BackgroundService.Controllers
             }
 
             return NotFound(new { Error = "L'utilisateur est introuvable ou le mot de passe de concorde pas" });
+        }
+
+        public string[] PublicData()
+        {
+            string[] data = new string[] { "pomme" };
+            return data;
+        }
+
+        //[Authorize]
+        [HttpGet]
+        public ActionResult<string[]> PrivateData()
+        {
+            string[] data = new string[] { "banane" };
+            return data;
         }
 
         public async Task<ActionResult> Logout()

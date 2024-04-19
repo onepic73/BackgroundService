@@ -1,5 +1,10 @@
 <div>
   <button (click)="register()">Enregistrer</button>
-  <button *ngIf="!isLoggedIn()" (click)="connect()">Connecter</button>
-  <button *ngIf="isLoggedIn()" (click)="logout()">Déconnecter</button>
+  <button *ngIf="!isLoggedIn()" (click)="login()">Login</button>
+  <button *ngIf="isLoggedIn()" (click)="logout()">Logout</button>
+
+  <button (click)="publicRequest()">Public</button>
+  <button (click)="privateRequest()">Private</button>
+
+  <button *ngIf="!isConnected && isLoggedIn()" (click)="connectToHub()">Connecter au Hub</button>
 </div>

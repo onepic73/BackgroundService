@@ -19,12 +19,12 @@ namespace BackgroundService.Hubs
         public override async Task OnConnectedAsync()
         {
             await base.OnConnectedAsync();
-            _game.AddUser(Context.UserIdentifier!);
+            //_game.AddUser(Context.UserIdentifier!);
         }
 
         public override async Task OnDisconnectedAsync(Exception? exception)
         {
-            _game.RemoveUser(Context.UserIdentifier!);
+            //_game.RemoveUser(Context.UserIdentifier!);
             await base.OnDisconnectedAsync(exception);
         }
 

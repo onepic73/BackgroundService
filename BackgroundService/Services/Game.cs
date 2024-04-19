@@ -4,6 +4,7 @@ using BackgroundService.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using SuperChance.DTOs;
 
 namespace BackgroundService.Services
@@ -15,12 +16,13 @@ namespace BackgroundService.Services
         private Dictionary<string, int> _data = new();
 
         private IHubContext<GameHub> _gameHub;
-        private BackgroundServiceContext _backgroundServiceContext;
 
-        public Game(IHubContext<GameHub> gameHub, BackgroundServiceContext backgroundServiceContext)
+        private IServiceScopeFactory _serviceScopeFactory;
+
+        public Game(IHubContext<GameHub> gameHub, IServiceScopeFactory serviceScopeFactory)
         {
             _gameHub = gameHub;
-            _backgroundServiceContext = backgroundServiceContext;
+            _serviceScopeFactory = serviceScopeFactory;
         }
 
         public void AddUser(string userId)
@@ -72,21 +74,28 @@ namespace BackgroundService.Services
                 return;
             }
 
-            List<Player> players = await _backgroundServiceContext.Player.Where(p => winners.Contains(p.UserId)).ToListAsync();
-            foreach (var player in players)
+            using (IServiceScope scope = _serviceScopeFactory.CreateScope())
             {
-                player.NbWins++;
+                BackgroundServiceContext backgroundServiceContext =
+                    scope.ServiceProvider.GetRequiredService<BackgroundServiceContext>();
+
+                List<Player> players = await backgroundServiceContext.Player.Where(p => winners.Contains(p.UserId)).ToListAsync();
+                foreach (var player in players)
+                {
+                    player.NbWins++;
+                }
+                await backgroundServiceContext.SaveChangesAsync();
+
+                List<IdentityUser> users = await backgroundServiceContext.Users.Where(u => winners.Contains(u.Id)).ToListAsync();
+
+                RoundResult roundResult = new RoundResult()
+                {
+                    Winners = users.Select(p => p.UserName)!,
+                    NbClicks = biggestValue
+                };
+                await _gameHub.Clients.All.SendAsync("EndRound", roundResult, stoppingToken);
             }
-            await _backgroundServiceContext.SaveChangesAsync();
-
-            List<IdentityUser> users = await _backgroundServiceContext.Users.Where(u => winners.Contains(u.Id)).ToListAsync();
-
-            RoundResult roundResult = new RoundResult()
-            {
-                Winners = users.Select(p => p.UserName)!,
-                NbClicks = biggestValue
-            };
-            await _gameHub.Clients.All.SendAsync("EndRound", roundResult, stoppingToken);
+            
 
             // Reset des compteurs
             foreach(var key in _data.Keys)
