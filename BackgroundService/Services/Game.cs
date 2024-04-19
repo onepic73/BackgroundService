@@ -109,9 +109,8 @@ namespace BackgroundService.Services
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                await EndRound(stoppingToken);
-
                 await Task.Delay(DELAY, stoppingToken);
+                await EndRound(stoppingToken);
             }
         }
     }

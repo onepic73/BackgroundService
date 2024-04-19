@@ -6,5 +6,12 @@
   <button (click)="publicRequest()">Public</button>
   <button (click)="privateRequest()">Private</button>
 
+
+
   <button *ngIf="!isConnected && isLoggedIn()" (click)="connectToHub()">Connecter au Hub</button>
+
+  <div *ngIf="isConnected && isLoggedIn()">
+    <button  (click)="Increment()">Incrémenter</button>
+    {{nbClicks}}
+  </div>
 </div>

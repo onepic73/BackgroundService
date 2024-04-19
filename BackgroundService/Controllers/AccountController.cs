@@ -1,4 +1,6 @@
-﻿using BackgroundService.DTOs;
+﻿using BackgroundService.Data;
+using BackgroundService.DTOs;
+using BackgroundService.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -11,11 +13,13 @@ namespace BackgroundService.Controllers
     {
         readonly UserManager<IdentityUser> UserManager;
         readonly SignInManager<IdentityUser> SignInManager;
+        readonly BackgroundServiceContext _context;
 
-        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, BackgroundServiceContext context)
         {
             UserManager = userManager;
             SignInManager = signInManager;
+            _context = context;
         }
 
         [HttpPost]
@@ -37,6 +41,17 @@ namespace BackgroundService.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError,
                     new { Message = "La création de l'utilisateur a échoué." });
             }
+
+            var player = new Player()
+            {
+                Id = 0,
+                NbWins = 0,
+                User = user
+            };
+
+            _context.Player.Add(player);
+            _context.SaveChanges();
+
             return Ok(new { Message = "Inscription réussie ! 🥳" });
         }
 

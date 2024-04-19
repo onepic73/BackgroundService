@@ -160,7 +160,8 @@ namespace BackgroundService.Migrations
                 name: "Player",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     NbWins = table.Column<int>(type: "int", nullable: false)
                 },

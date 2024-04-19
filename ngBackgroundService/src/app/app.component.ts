@@ -8,6 +8,11 @@ import * as signalR from "@microsoft/signalr"
 
 const CONNECTION_LOCALSTORAGE_KEY = "connected";
 
+interface RoundResult{
+  winners:string[],
+  nbClicks:number
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -21,14 +26,15 @@ export class AppComponent {
   accountBaseUrl = this.apiBaseUrl + "Account/";
 
   isConnected = false;
+  nbClicks = 0;
   private hubConnection?: signalR.HubConnection
 
   constructor(public http: HttpClient){}
 
   async register(){
     let registerData = {
-      username: "Autre3",
-      email : "autre3@test.com",
+      username: "Autre4",
+      email : "autre4@test.com",
       password : "Passw0rd!",
       passwordConfirm : "Passw0rd!",
     }
@@ -38,7 +44,7 @@ export class AppComponent {
 
   async login(){
     let registerData = {
-      username : "Autre3",
+      username : "Autre4",
       password : "Passw0rd!"
     }
     let result = await lastValueFrom(this.http.post<any>(this.accountBaseUrl + 'Login', registerData));
@@ -62,6 +68,11 @@ export class AppComponent {
     console.log(result);
   }
 
+  Increment() {
+    this.nbClicks++;
+    this.hubConnection!.invoke('Increment')
+  }
+
   isLoggedIn(){
     return localStorage.getItem(CONNECTION_LOCALSTORAGE_KEY) != null;
   }
@@ -77,21 +88,19 @@ export class AppComponent {
       .then(() => {
         this.isConnected = true;
         // Une fois connectée, on peut commencer à écouter pour les messages que l'on va recevoir du serveur
-        /*this.hubConnection!.on('UsersList', (data) => {
-          this.usersList = data;
-        });
+        this.hubConnection!.on('EndRound', (data:RoundResult) => {
+          this.nbClicks = 0;
+          if(data.nbClicks > 0){
+            let phrase = " a gagné avec ";
+            if(data.winners.length > 1)
+              phrase = " ont gagnées avec "
+            alert(data.winners.join(", ") + phrase + data.nbClicks + " clicks!");
+          }
+          else{
+            alert("Aucun gagnant...");
+          }
 
-        this.hubConnection!.on('ChannelsList', (data) => {
-          this.channelsList = data;
         });
-
-        this.hubConnection!.on('NewMessage', (message) => {
-          this.messages.push(message);
-        });
-
-        this.hubConnection!.on('LeaveChannel', (message) => {
-          this.selectedChannel = null;
-        });*/
       })
       .catch(err => console.log('Error while starting connection: ' + err))
   }
