@@ -25,32 +25,25 @@ export class AppComponent {
 
   baseUrl = "https://localhost:7056/";
 
-  nbWins = 0;
+  // Ajouter une variable nbWins
 
   private hubConnection?: signalR.HubConnection
 
   isConnected = false;
   nbClicks = 0;
-  multiplierInitialCost = 0
-  multiplierCost = 0;
-  multiplier = 1;
+  // TODO: Ajouter 3 variables: Le multiplier, le multiplierCost, mais également le multiplierIntialCost pour remettre à jour multiplierCost après chaque fin de round (ou sinon on peut passer l'information dans l'appel qui vient du Hub!)
 
   constructor(public account:AccountService){
   }
 
   Increment() {
-    this.nbClicks += this.multiplier;
+    //TODO: Augmenter le nbClicks par la valeur du multiplicateur
+    this.nbClicks += 1;
     this.hubConnection!.invoke('Increment')
   }
 
   BuyMultiplier() {
-    if(this.nbClicks >= this.multiplierCost)
-    {
-      this.hubConnection!.invoke('BuyMultiplier');
-      this.nbClicks -= this.multiplierCost;
-      this.multiplier *= 2;
-      this.multiplierCost *= 2;
-    }
+    // TODO: Implémenter la méthode qui permet d'acheter un niveau de multiplier (Appel au Hub!)
   }
 
   async register(){
@@ -91,18 +84,14 @@ export class AppComponent {
 
         this.hubConnection!.on('GameInfo', (data:GameInfo) => {
           this.isConnected = true;
-          this.multiplierInitialCost = data.multiplierCost;
-          this.multiplierCost = this.multiplierInitialCost;
-          this.nbWins = data.nbWins;
+          // TODO: Mettre à jour les variables pour le coût du multiplier et le nbWins
         });
 
         this.hubConnection!.on('EndRound', (data:RoundResult) => {
           this.nbClicks = 0;
-          this.multiplierCost = this.multiplierInitialCost;
-          this.multiplier = 1;
+          // TODO: Reset du multiplierCost et le multiplier
 
-          if(data.winners.indexOf(this.account.username) >= 0)
-            this.nbWins++;
+          // TODO: Si le joueur a gagné, on augmene nbWins
 
           if(data.nbClicks > 0){
             let phrase = " a gagné avec ";

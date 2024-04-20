@@ -44,7 +44,6 @@ namespace BackgroundService.Controllers
             var player = new Player()
             {
                 Id = 0,
-                NbWins = 0,
                 User = user
             };
 
