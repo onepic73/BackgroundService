@@ -33,17 +33,7 @@ export class AppComponent {
   isConnected = false;
   nbClicks = 0;
 
-  timeLeft = 0;
-
   constructor(public http: HttpClient){
-    this.reduceTime();
-  }
-
-  reduceTime(){
-    setTimeout(() => {
-      this.timeLeft--;
-      this.reduceTime();
-    }, 1000);
   }
 
   async register(){
@@ -96,7 +86,6 @@ export class AppComponent {
         this.isConnected = true;
         this.hubConnection!.on('EndRound', (data:RoundResult) => {
           this.nbClicks = 0;
-          this.timeLeft = 30;
           if(data.nbClicks > 0){
             let phrase = " a gagné avec ";
             if(data.winners.length > 1)
