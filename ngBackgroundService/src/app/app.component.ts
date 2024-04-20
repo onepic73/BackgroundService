@@ -25,18 +25,33 @@ export class AppComponent {
   apiBaseUrl = this.baseUrl + "api/"
   accountBaseUrl = this.apiBaseUrl + "Account/";
 
-  isConnected = false;
-  nbClicks = 0;
+  username = "test";
+  motDePasse = "Passw0rd!";
+
   private hubConnection?: signalR.HubConnection
 
-  constructor(public http: HttpClient){}
+  isConnected = false;
+  nbClicks = 0;
+
+  timeLeft = 0;
+
+  constructor(public http: HttpClient){
+    this.reduceTime();
+  }
+
+  reduceTime(){
+    setTimeout(() => {
+      this.timeLeft--;
+      this.reduceTime();
+    }, 1000);
+  }
 
   async register(){
     let registerData = {
-      username: "Autre4",
-      email : "autre4@test.com",
-      password : "Passw0rd!",
-      passwordConfirm : "Passw0rd!",
+      username: this.username,
+      email : this.username + "@test.com",
+      password : this.motDePasse,
+      passwordConfirm : this.motDePasse,
     }
     let result = await lastValueFrom(this.http.post<any>(this.accountBaseUrl + 'Register', registerData));
     console.log(result);
@@ -44,27 +59,20 @@ export class AppComponent {
 
   async login(){
     let registerData = {
-      username : "Autre4",
-      password : "Passw0rd!"
+      username : this.username,
+      password : this.motDePasse
     }
     let result = await lastValueFrom(this.http.post<any>(this.accountBaseUrl + 'Login', registerData));
     console.log(result);
-    localStorage.setItem(CONNECTION_LOCALSTORAGE_KEY, "oui");
-  }
-
-  async privateRequest(){
-    let result = await lastValueFrom(this.http.get<any>(this.accountBaseUrl + 'PrivateData'));
-    console.log(result);
-  }
-
-  async publicRequest(){
-    let result = await lastValueFrom(this.http.get<any>(this.accountBaseUrl + 'PublicData'));
-    console.log(result);
+    localStorage.setItem(CONNECTION_LOCALSTORAGE_KEY, registerData.username);
   }
 
   async logout(){
     let result = await lastValueFrom(this.http.get<any>(this.accountBaseUrl + 'Logout'));
     localStorage.removeItem(CONNECTION_LOCALSTORAGE_KEY);
+    if(this.hubConnection?.state == signalR.HubConnectionState.Connected)
+      this.hubConnection.stop();
+    this.isConnected = false;
     console.log(result);
   }
 
@@ -78,18 +86,17 @@ export class AppComponent {
   }
 
   connectToHub() {
-    // TODO On doit commencer par créer la connexion vers le Hub
     this.hubConnection = new signalR.HubConnectionBuilder()
                               .withUrl(this.baseUrl + 'game')
                               .build();
-    // TODO On se connecte au Hub
-    this.hubConnection
+
+                              this.hubConnection
       .start()
       .then(() => {
         this.isConnected = true;
-        // Une fois connectée, on peut commencer à écouter pour les messages que l'on va recevoir du serveur
         this.hubConnection!.on('EndRound', (data:RoundResult) => {
           this.nbClicks = 0;
+          this.timeLeft = 30;
           if(data.nbClicks > 0){
             let phrase = " a gagné avec ";
             if(data.winners.length > 1)

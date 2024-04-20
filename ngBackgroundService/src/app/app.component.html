@@ -1,17 +1,39 @@
-<div>
-  <button (click)="register()">Enregistrer</button>
-  <button *ngIf="!isLoggedIn()" (click)="login()">Login</button>
-  <button *ngIf="isLoggedIn()" (click)="logout()">Logout</button>
+<div style="width:400px" class="container">
+  <form style="border-color: black; border-radius: 1px; border-style: solid; margin: 8px; padding: 8px;">
+    <div *ngIf="!isLoggedIn()" style="margin: 4px; height: 70px;">
+      <mat-form-field>
+        <mat-label>Nom d'usager</mat-label>
+        <input matInput type="text" [(ngModel)]="username" name="username"/>
+      </mat-form-field>
+    </div>
+    <div *ngIf="isLoggedIn()" style="margin: 4px; height: 70px;">
+      <div style="font-size: large; padding-top: 24px;">Bonjour <b>{{username}}!</b></div>
+    </div>
+    <div *ngIf="!isLoggedIn()">
+      <button mat-raised-button color="primary" (click)="register()" style="margin:4px">Enregistrer</button>
+      <button mat-raised-button color="accent" (click)="login()" style="margin:4px">Login</button>
+    </div>
+    <div *ngIf="isLoggedIn()">
+      <button mat-raised-button (click)="logout()" style="margin:4px">Logout</button>
+    </div>
+  </form>
 
-  <button (click)="publicRequest()">Public</button>
-  <button (click)="privateRequest()">Private</button>
-
-
-
-  <button *ngIf="!isConnected && isLoggedIn()" (click)="connectToHub()">Connecter au Hub</button>
-
-  <div *ngIf="isConnected && isLoggedIn()">
-    <button  (click)="Increment()">Incrémenter</button>
-    {{nbClicks}}
+  <div *ngIf="isLoggedIn()" style="border-color: black; border-radius: 1px; border-style: solid; margin:8px; margin-top: 32px; padding: 8px;">
+    <div *ngIf="!isConnected">
+      <div style="font-size: large;">Pas connecté au Hub..</div>
+      <br>
+      <div>
+        <button mat-raised-button color="primary" (click)="connectToHub()">Connecter au Hub</button>
+      </div>
+    </div>
+    <div *ngIf="isConnected">
+      <div style="font-size: large;">Connecté!</div>
+      <br>
+      <div>
+        {{timeLeft}}
+        <button mat-raised-button color="primary" (click)="Increment()">Cliquer</button>
+        Clicks dans ce round: {{nbClicks}}
+      </div>
+    </div>
   </div>
 </div>
