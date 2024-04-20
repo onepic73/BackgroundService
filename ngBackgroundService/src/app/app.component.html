@@ -1,39 +1,39 @@
 <div style="width:400px" class="container">
-  <form style="border-color: black; border-radius: 1px; border-style: solid; margin: 8px; padding: 8px;">
-    <div *ngIf="!isLoggedIn()" style="margin: 4px; height: 70px;">
+  <form class="borderedZone">
+    <div class="loginZone" *ngIf="!isLoggedIn()">
       <mat-form-field>
         <mat-label>Nom d'usager</mat-label>
         <input matInput type="text" [(ngModel)]="username" name="username"/>
       </mat-form-field>
     </div>
-    <div *ngIf="isLoggedIn()" style="margin: 4px; height: 70px;">
-      <div style="font-size: large; padding-top: 24px;">Bonjour <b>{{username}}!</b></div>
+    <div class="loginZone" *ngIf="isLoggedIn()">
+      <div style="padding-top: 24px;">Bonjour <b>{{username}}!</b></div>
     </div>
     <div *ngIf="!isLoggedIn()">
-      <button mat-raised-button color="primary" (click)="register()" style="margin:4px">Enregistrer</button>
-      <button mat-raised-button color="accent" (click)="login()" style="margin:4px">Login</button>
+      <button mat-raised-button color="primary" (click)="register()">Enregistrer</button>
+      <button mat-raised-button color="accent" (click)="login()">Login</button>
     </div>
     <div *ngIf="isLoggedIn()">
-      <button mat-raised-button (click)="logout()" style="margin:4px">Logout</button>
+      <button mat-raised-button (click)="logout()">Logout</button>
     </div>
   </form>
 
-  <div *ngIf="isLoggedIn()" style="border-color: black; border-radius: 1px; border-style: solid; margin:8px; margin-top: 32px; padding: 8px; font-size: large; height: 130px">
+  <div class="borderedZone" *ngIf="isLoggedIn()" style="margin-top: 32px; height: 130px">
     <div *ngIf="!isConnected">
-      <div style="font-size: large;">Pas connecté au Hub..</div>
+      <div >Pas connecté au Hub..</div>
       <br>
       <div>
         <button mat-raised-button color="primary" (click)="connectToHub()">Connecter au Hub</button>
       </div>
     </div>
     <div *ngIf="isConnected">
-      <div style="font-size: large;">Connecté! Vous avez eu <b>{{nbWins}}</b> victoires!</div>
+      <div >Connecté! Vous avez eu <b>{{nbWins}}</b> victoires!</div>
       <br>
       <div>
         <button mat-raised-button color="primary" (click)="Increment()">Cliquer</button>
         Clicks dans ce round: <b>{{nbClicks}}</b>
       </div>
-      <div style="margin-top: 12px;">
+      <div>
         <button mat-raised-button color="primary" color="accent" (click)="BuyMultiplier()">Acheter pour {{multiplierCost}}</button>
         Multiplicateur: <b>{{multiplier}}</b>
       </div>
