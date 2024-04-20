@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BackgroundService.Migrations
 {
     [DbContext(typeof(BackgroundServiceContext))]
-    [Migration("20240419202043_initiale")]
+    [Migration("20240420193047_initiale")]
     partial class initiale
     {
         /// <inheritdoc />
@@ -32,9 +32,6 @@ namespace BackgroundService.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("NbWins")
-                        .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .IsRequired()
