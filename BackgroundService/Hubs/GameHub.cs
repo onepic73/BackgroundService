@@ -4,7 +4,6 @@ using BackgroundService.Models;
 using BackgroundService.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
 
 namespace BackgroundService.Hubs
 {

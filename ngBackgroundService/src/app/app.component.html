@@ -11,7 +11,7 @@
     </div>
     <div *ngIf="!isLoggedIn()">
       <button mat-raised-button color="primary" (click)="register()">Enregistrer</button>
-      <button mat-raised-button color="accent" (click)="account.login()">Login</button>
+      <button mat-raised-button color="accent" (click)="login()">Login</button>
     </div>
     <div *ngIf="isLoggedIn()">
       <button mat-raised-button color="accent" (click)="logout()">Logout</button>

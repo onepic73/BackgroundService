@@ -85,7 +85,7 @@ export class AppComponent {
                               .withUrl(this.baseUrl + 'game')
                               .build();
 
-                              this.hubConnection
+    this.hubConnection
       .start()
       .then(() => {
 

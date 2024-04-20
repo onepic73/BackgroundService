@@ -4,7 +4,6 @@ using BackgroundService.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using SuperChance.DTOs;
 
 namespace BackgroundService.Services
@@ -81,8 +80,15 @@ namespace BackgroundService.Services
                 }
             }
 
+            // Reset
+            foreach (var key in _data.Keys)
+            {
+                _data[key].Multiplier = 1;
+                _data[key].Score = 0;
+            }
+
             // Aucune participation!
-            if(biggestValue == 0)
+            if (biggestValue == 0)
             {
                 RoundResult noResult = new RoundResult()
                 {
@@ -113,14 +119,6 @@ namespace BackgroundService.Services
                     NbClicks = biggestValue
                 };
                 await _gameHub.Clients.All.SendAsync("EndRound", roundResult, stoppingToken);
-            }
-            
-
-            // Reset des compteurs
-            foreach(var key in _data.Keys)
-            {
-                _data[key].Multiplier = 1;
-                _data[key].Score = 0;
             }
         }
 

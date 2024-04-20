@@ -11,9 +11,6 @@ builder.Services.AddDbContext<BackgroundServiceContext>(options =>
 // Permet d'obtenir des erreurs de BD plus claires et même d'appliquer des migrations manquantes
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-/*builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-    .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<BackgroundServiceContext>();*/
 builder.Services.AddDefaultIdentity<IdentityUser>()
     .AddEntityFrameworkStores<BackgroundServiceContext>();
 
