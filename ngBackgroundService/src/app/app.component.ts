@@ -1,12 +1,9 @@
+import { AccountService } from './services/account.service';
 import { Component } from '@angular/core';
-import { lastValueFrom } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
 
 // On doit commencer par ajouter signalr dans les node_modules: npm install @microsoft/signalr
 // Ensuite on inclut la librairie
 import * as signalR from "@microsoft/signalr"
-
-const CONNECTION_LOCALSTORAGE_KEY = "connected";
 
 interface RoundResult{
   winners:string[],
@@ -27,11 +24,6 @@ export class AppComponent {
   title = 'ngBackgroundService';
 
   baseUrl = "https://localhost:7056/";
-  apiBaseUrl = this.baseUrl + "api/"
-  accountBaseUrl = this.apiBaseUrl + "Account/";
-
-  username = "test";
-  motDePasse = "Passw0rd!";
 
   nbWins = 0;
 
@@ -43,37 +35,7 @@ export class AppComponent {
   multiplierCost = 0;
   multiplier = 1;
 
-  constructor(public http: HttpClient){
-  }
-
-  async register(){
-    let registerData = {
-      username: this.username,
-      email : this.username + "@test.com",
-      password : this.motDePasse,
-      passwordConfirm : this.motDePasse,
-    }
-    let result = await lastValueFrom(this.http.post<any>(this.accountBaseUrl + 'Register', registerData));
-    console.log(result);
-  }
-
-  async login(){
-    let registerData = {
-      username : this.username,
-      password : this.motDePasse
-    }
-    let result = await lastValueFrom(this.http.post<any>(this.accountBaseUrl + 'Login', registerData));
-    console.log(result);
-    localStorage.setItem(CONNECTION_LOCALSTORAGE_KEY, registerData.username);
-  }
-
-  async logout(){
-    let result = await lastValueFrom(this.http.get<any>(this.accountBaseUrl + 'Logout'));
-    localStorage.removeItem(CONNECTION_LOCALSTORAGE_KEY);
-    if(this.hubConnection?.state == signalR.HubConnectionState.Connected)
-      this.hubConnection.stop();
-    this.isConnected = false;
-    console.log(result);
+  constructor(public account:AccountService){
   }
 
   Increment() {
@@ -91,8 +53,31 @@ export class AppComponent {
     }
   }
 
-  isLoggedIn(){
-    return localStorage.getItem(CONNECTION_LOCALSTORAGE_KEY) != null;
+  async register(){
+    try{
+      await this.account.register();
+    }
+    catch(e){
+      alert("Erreur pendant l'enregistrement!!!!!");
+      return;
+    }
+    alert("L'enregistrement a été un succès!");
+  }
+
+  async login(){
+    await this.account.login();
+  }
+
+  async logout(){
+    await this.account.logout();
+
+    if(this.hubConnection?.state == signalR.HubConnectionState.Connected)
+      this.hubConnection.stop();
+    this.isConnected = false;
+  }
+
+  isLoggedIn() : Boolean{
+    return this.account.isLoggedIn();
   }
 
   connectToHub() {
@@ -109,8 +94,6 @@ export class AppComponent {
           this.multiplierInitialCost = data.multiplierCost;
           this.multiplierCost = this.multiplierInitialCost;
           this.nbWins = data.nbWins;
-          console.log(data);
-          console.log(this.nbWins);
         });
 
         this.hubConnection!.on('EndRound', (data:RoundResult) => {
@@ -118,7 +101,7 @@ export class AppComponent {
           this.multiplierCost = this.multiplierInitialCost;
           this.multiplier = 1;
 
-          if(data.winners.indexOf(this.username) >= 0)
+          if(data.winners.indexOf(this.account.username) >= 0)
             this.nbWins++;
 
           if(data.nbClicks > 0){
