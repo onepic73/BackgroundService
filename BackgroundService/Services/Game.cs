@@ -9,11 +9,18 @@ using SuperChance.DTOs;
 
 namespace BackgroundService.Services
 {
+    public class UserData
+    {
+        public int Score { get; set; } = 0;
+        public int Multiplier { get; set; } = 1;
+    }
+
     public class Game : Microsoft.Extensions.Hosting.BackgroundService
     {
         public const int DELAY = 30 * 1000;
+        public const int MULTIPLIER_BASE_PRICE = 10;
 
-        private Dictionary<string, int> _data = new();
+        private Dictionary<string, UserData> _data = new();
 
         private IHubContext<GameHub> _gameHub;
 
@@ -27,7 +34,7 @@ namespace BackgroundService.Services
 
         public void AddUser(string userId)
         {
-            _data[userId] = 0;
+            _data[userId] = new UserData();
         }
 
         public void RemoveUser(string userId)
@@ -37,7 +44,19 @@ namespace BackgroundService.Services
 
         public void Increment(string userId)
         {
-            _data[userId]++;
+            UserData userData = _data[userId];
+            userData.Score += userData.Multiplier;
+        }
+
+        public void BuyMultiplier(string userId)
+        {
+            UserData userData = _data[userId];
+            int cost = MULTIPLIER_BASE_PRICE * userData.Multiplier;
+            if (userData.Score >= cost)
+            {
+                userData.Score -= cost;
+                userData.Multiplier *= 2;
+            }
         }
 
         public async Task EndRound(CancellationToken stoppingToken)
@@ -47,7 +66,7 @@ namespace BackgroundService.Services
             // Reset des compteurs
             foreach (var key in _data.Keys)
             {
-                int value = _data[key];
+                int value = _data[key].Score;
                 if (value > 0 && value >= biggestValue)
                 {
                     if(value > biggestValue)
@@ -100,7 +119,8 @@ namespace BackgroundService.Services
             // Reset des compteurs
             foreach(var key in _data.Keys)
             {
-                _data[key] = 0;
+                _data[key].Multiplier = 1;
+                _data[key].Score = 0;
             }
         }
 

@@ -1,6 +1,7 @@
 ﻿using BackgroundService.Data;
 using BackgroundService.DTOs;
 using BackgroundService.Models;
+using BackgroundService.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;

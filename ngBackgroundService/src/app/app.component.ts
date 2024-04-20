@@ -13,6 +13,11 @@ interface RoundResult{
   nbClicks:number
 }
 
+interface GameInfo{
+  multiplierCost:number,
+  nbWins:number;
+}
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -28,10 +33,15 @@ export class AppComponent {
   username = "test";
   motDePasse = "Passw0rd!";
 
+  nbWins = 0;
+
   private hubConnection?: signalR.HubConnection
 
   isConnected = false;
   nbClicks = 0;
+  multiplierInitialCost = 0
+  multiplierCost = 0;
+  multiplier = 1;
 
   constructor(public http: HttpClient){
   }
@@ -67,8 +77,18 @@ export class AppComponent {
   }
 
   Increment() {
-    this.nbClicks++;
+    this.nbClicks += this.multiplier;
     this.hubConnection!.invoke('Increment')
+  }
+
+  BuyMultiplier() {
+    if(this.nbClicks >= this.multiplierCost)
+    {
+      this.hubConnection!.invoke('BuyMultiplier');
+      this.nbClicks -= this.multiplierCost;
+      this.multiplier *= 2;
+      this.multiplierCost *= 2;
+    }
   }
 
   isLoggedIn(){
@@ -83,9 +103,24 @@ export class AppComponent {
                               this.hubConnection
       .start()
       .then(() => {
-        this.isConnected = true;
+
+        this.hubConnection!.on('GameInfo', (data:GameInfo) => {
+          this.isConnected = true;
+          this.multiplierInitialCost = data.multiplierCost;
+          this.multiplierCost = this.multiplierInitialCost;
+          this.nbWins = data.nbWins;
+          console.log(data);
+          console.log(this.nbWins);
+        });
+
         this.hubConnection!.on('EndRound', (data:RoundResult) => {
           this.nbClicks = 0;
+          this.multiplierCost = this.multiplierInitialCost;
+          this.multiplier = 1;
+
+          if(data.winners.indexOf(this.username) >= 0)
+            this.nbWins++;
+
           if(data.nbClicks > 0){
             let phrase = " a gagné avec ";
             if(data.winners.length > 1)
