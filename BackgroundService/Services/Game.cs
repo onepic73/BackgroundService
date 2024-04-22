@@ -63,15 +63,12 @@ namespace BackgroundService.Services
                 int value = _data[key].Score;
                 if (value > 0 && value >= biggestValue)
                 {
-                    if(value > biggestValue)
+                    if (value > biggestValue)
                     {
-                        if (value > biggestValue)
-                        {
-                            winners.Clear();
-                            biggestValue = value;
-                        }
-                        winners.Add(key);
+                        winners.Clear();
+                        biggestValue = value;
                     }
+                    winners.Add(key);
                 }
             }
 
