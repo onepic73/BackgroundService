@@ -1,0 +1,14 @@
+﻿@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Tools</h1>
+
+<h2>Pending migrations</h2>
+@foreach (var item in (ViewData["pendingmigrations"] as List<string>)) {
+<div>
+    @item
+</div>
+}
+
+<a asp-action="ApplyMigrations">Apply Migrations</a>
