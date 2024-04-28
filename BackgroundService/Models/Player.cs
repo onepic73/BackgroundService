@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel;
 
 namespace BackgroundService.Models
 {
@@ -6,6 +7,7 @@ namespace BackgroundService.Models
     {
         public int Id { get; set; }
         public string UserId { get; set; }
+        [DisplayName("Username")]
         public IdentityUser User { get; set; }
         public int NbWins { get; set; }
     }

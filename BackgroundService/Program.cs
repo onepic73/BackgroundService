@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<BackgroundServiceContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("BackgroundServiceContext") ?? throw new InvalidOperationException("Connection string 'BackgroundServiceContext' not found.")));
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'BackgroundServiceContext' not found.")));
 
 // Permet d'obtenir des erreurs de BD plus claires et même d'appliquer des migrations manquantes
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
