@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { lastValueFrom } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 const CONNECTION_LOCALSTORAGE_KEY = "connected";
 
@@ -9,8 +10,7 @@ const CONNECTION_LOCALSTORAGE_KEY = "connected";
 })
 export class AccountService {
 
-  baseUrl = "https://localhost:7056/";
-  apiBaseUrl = this.baseUrl + "api/"
+  apiBaseUrl = environment.apiUrl + "api/"
   accountBaseUrl = this.apiBaseUrl + "Account/";
 
   username = "test";

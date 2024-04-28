@@ -1,5 +1,6 @@
 import { AccountService } from './services/account.service';
 import { Component } from '@angular/core';
+import { environment } from 'src/environments/environment';
 
 // On doit commencer par ajouter signalr dans les node_modules: npm install @microsoft/signalr
 // Ensuite on inclut la librairie
@@ -23,7 +24,7 @@ interface GameInfo{
 export class AppComponent {
   title = 'ngBackgroundService';
 
-  baseUrl = "https://localhost:7056/";
+  baseUrl = environment.apiUrl;
 
   nbWins = 0;
 
