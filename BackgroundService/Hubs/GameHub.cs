@@ -21,16 +21,22 @@ namespace BackgroundService.Hubs
 
         public override async Task OnConnectedAsync()
         {
+            System.Diagnostics.Trace.TraceInformation("New connection from: " + Context.UserIdentifier);
+
             await base.OnConnectedAsync();
             _game.AddUser(Context.UserIdentifier!);
 
             Player player = _backgroundServiceContext.Player.Where(p => p.UserId == Context.UserIdentifier!).Single();
+
+            System.Diagnostics.Trace.TraceInformation("Found player: " + player.NbWins);
 
             await Clients.Caller.SendAsync("GameInfo", new GameInfoDTO()
             {
                 NbWins = player.NbWins,
                 MultiplierCost = Game.MULTIPLIER_BASE_PRICE
             });
+
+            System.Diagnostics.Trace.TraceInformation("Fin connection from: " + Context.UserIdentifier);
         }
 
         public override async Task OnDisconnectedAsync(Exception? exception)
