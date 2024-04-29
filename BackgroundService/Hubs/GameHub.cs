@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace BackgroundService.Hubs
 {
-    [Authorize]
+    //[Authorize]
     public class GameHub : Hub
     {
         private Game _game;
