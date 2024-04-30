@@ -51,8 +51,6 @@ namespace BackgroundService.Controllers
             _context.Player.Add(player);
             _context.SaveChanges();
 
-            System.Diagnostics.Trace.TraceInformation("Register a fonctionné avec succès");
-
             return Ok(new { Message = "Inscription réussie ! 🥳" });
         }
 
@@ -62,7 +60,6 @@ namespace BackgroundService.Controllers
             var result = await SignInManager.PasswordSignInAsync(login.Username, login.Password, true, lockoutOnFailure: false);
             if (result.Succeeded)
             {
-                System.Diagnostics.Trace.TraceInformation("Login a fonctionné avec succès");
                 return Ok();
             }
 
