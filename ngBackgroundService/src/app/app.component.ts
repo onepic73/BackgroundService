@@ -1,5 +1,5 @@
 import { AccountService } from './services/account.service';
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { environment } from 'src/environments/environment';
 
 // On doit commencer par ajouter signalr dans les node_modules: npm install @microsoft/signalr
@@ -36,7 +36,7 @@ export class AppComponent {
   multiplierCost = 0;
   multiplier = 1;
 
-  constructor(public account:AccountService){
+  constructor(public account:AccountService, private zone: NgZone){
   }
 
   Increment() {
@@ -91,33 +91,36 @@ export class AppComponent {
 
     this.hubConnection.on('GameInfo', (data:GameInfo) => {
       console.log("Received GameInfo");
-      console.log(data);
-      this.isConnected = true;
-      this.multiplierInitialCost = data.multiplierCost;
-      this.multiplierCost = this.multiplierInitialCost;
-      this.nbWins = data.nbWins;
+      this.zone.run(() => {
+        console.log(data);
+        this.isConnected = true;
+        this.multiplierInitialCost = data.multiplierCost;
+        this.multiplierCost = this.multiplierInitialCost;
+        this.nbWins = data.nbWins;
+      });
     });
 
     this.hubConnection.on('EndRound', (data:RoundResult) => {
       console.log("Received EndRound");
-      console.log(data);
+      this.zone.run(() => {
+        console.log(data);
+        this.nbClicks = 0;
+        this.multiplierCost = this.multiplierInitialCost;
+        this.multiplier = 1;
 
-      this.nbClicks = 0;
-      this.multiplierCost = this.multiplierInitialCost;
-      this.multiplier = 1;
+        if(data.winners.indexOf(this.account.username) >= 0)
+          this.nbWins++;
 
-      if(data.winners.indexOf(this.account.username) >= 0)
-        this.nbWins++;
-
-      if(data.nbClicks > 0){
-        let phrase = " a gagné avec ";
-        if(data.winners.length > 1)
-          phrase = " ont gagnées avec "
-        alert(data.winners.join(", ") + phrase + data.nbClicks + " clicks!");
-      }
-      else{
-        alert("Aucun gagnant...");
-      }
+        if(data.nbClicks > 0){
+          let phrase = " a gagné avec ";
+          if(data.winners.length > 1)
+            phrase = " ont gagnées avec "
+          alert(data.winners.join(", ") + phrase + data.nbClicks + " clicks!");
+        }
+        else{
+          alert("Aucun gagnant...");
+        }
+      });
     });
 
     this.hubConnection
