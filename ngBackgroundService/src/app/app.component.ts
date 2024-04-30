@@ -78,32 +78,38 @@ export class AppComponent {
                               .withUrl(this.baseUrl + 'game')
                               .build();
 
+    if(!this.hubConnection)
+    {
+      console.log("Impossible de créer un HubConnection???");
+      return;
+    }
+
+    this.hubConnection.on('GameInfo', (data:GameInfo) => {
+      this.isConnected = true;
+      // TODO: Mettre à jour les variables pour le coût du multiplier et le nbWins
+    });
+
+    this.hubConnection.on('EndRound', (data:RoundResult) => {
+      this.nbClicks = 0;
+      // TODO: Reset du multiplierCost et le multiplier
+
+      // TODO: Si le joueur a gagné, on augmene nbWins
+
+      if(data.nbClicks > 0){
+        let phrase = " a gagné avec ";
+        if(data.winners.length > 1)
+          phrase = " ont gagnées avec "
+        alert(data.winners.join(", ") + phrase + data.nbClicks + " clicks!");
+      }
+      else{
+        alert("Aucun gagnant...");
+      }
+    });
+
     this.hubConnection
       .start()
       .then(() => {
-
-        this.hubConnection!.on('GameInfo', (data:GameInfo) => {
-          this.isConnected = true;
-          // TODO: Mettre à jour les variables pour le coût du multiplier et le nbWins
-        });
-
-        this.hubConnection!.on('EndRound', (data:RoundResult) => {
-          this.nbClicks = 0;
-          // TODO: Reset du multiplierCost et le multiplier
-
-          // TODO: Si le joueur a gagné, on augmene nbWins
-
-          if(data.nbClicks > 0){
-            let phrase = " a gagné avec ";
-            if(data.winners.length > 1)
-              phrase = " ont gagnées avec "
-            alert(data.winners.join(", ") + phrase + data.nbClicks + " clicks!");
-          }
-          else{
-            alert("Aucun gagnant...");
-          }
-
-        });
+        console.log("Connecté au Hub");
       })
       .catch(err => console.log('Error while starting connection: ' + err))
   }
