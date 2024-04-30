@@ -85,36 +85,37 @@ export class AppComponent {
                               .withUrl(this.baseUrl + 'game')
                               .build();
 
+    this.hubConnection.on('GameInfo', (data:GameInfo) => {
+      this.isConnected = true;
+      this.multiplierInitialCost = data.multiplierCost;
+      this.multiplierCost = this.multiplierInitialCost;
+      this.nbWins = data.nbWins;
+    });
+
+    this.hubConnection.on('EndRound', (data:RoundResult) => {
+      this.nbClicks = 0;
+      this.multiplierCost = this.multiplierInitialCost;
+      this.multiplier = 1;
+
+      if(data.winners.indexOf(this.account.username) >= 0)
+        this.nbWins++;
+
+      if(data.nbClicks > 0){
+        let phrase = " a gagné avec ";
+        if(data.winners.length > 1)
+          phrase = " ont gagnées avec "
+        alert(data.winners.join(", ") + phrase + data.nbClicks + " clicks!");
+      }
+      else{
+        alert("Aucun gagnant...");
+      }
+
+    });
+
     this.hubConnection
       .start()
       .then(() => {
-
-        this.hubConnection!.on('GameInfo', (data:GameInfo) => {
-          this.isConnected = true;
-          this.multiplierInitialCost = data.multiplierCost;
-          this.multiplierCost = this.multiplierInitialCost;
-          this.nbWins = data.nbWins;
-        });
-
-        this.hubConnection!.on('EndRound', (data:RoundResult) => {
-          this.nbClicks = 0;
-          this.multiplierCost = this.multiplierInitialCost;
-          this.multiplier = 1;
-
-          if(data.winners.indexOf(this.account.username) >= 0)
-            this.nbWins++;
-
-          if(data.nbClicks > 0){
-            let phrase = " a gagné avec ";
-            if(data.winners.length > 1)
-              phrase = " ont gagnées avec "
-            alert(data.winners.join(", ") + phrase + data.nbClicks + " clicks!");
-          }
-          else{
-            alert("Aucun gagnant...");
-          }
-
-        });
+        console.log("Connected to Hub");
       })
       .catch(err => console.log('Error while starting connection: ' + err))
   }
