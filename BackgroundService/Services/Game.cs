@@ -12,6 +12,7 @@ namespace BackgroundService.Services
     {
         public int Score { get; set; } = 0;
         // TODO: Ajouter une propriété pour le multiplier
+        public int Multiplicateur { get; set; } = 1;
     }
 
     public class Game : Microsoft.Extensions.Hosting.BackgroundService
@@ -45,13 +46,24 @@ namespace BackgroundService.Services
         {
             UserData userData = _data[userId];
             // TODO: Ajouter la valeur du muliplier au lieu d'ajouter 1
-            userData.Score += 1;
+            userData.Score += 1 * userData.Multiplicateur;
         }
 
         // TODO: Ajouter une méthode pour acheter un multiplier. Le coût est le prix de base * le multiplier actuel
         // Les prix sont donc de 10, 20, 40, 80, 160 (Si le prix de base est 10)
         // Réduire le score du coût du multiplier
         // Doubler le multiplier du joueur
+        public void Multiplicateur(string userId)
+        {
+            UserData userData = _data[userId];
+            int multiplicateur = userData.Multiplicateur;
+            int countScore = 10 * multiplicateur;
+            if (userData.Score >= countScore)
+            {
+                userData.Multiplicateur = multiplicateur * 2;
+                userData.Score -= countScore;
+            }
+        }
 
         public async Task EndRound(CancellationToken stoppingToken)
         {
