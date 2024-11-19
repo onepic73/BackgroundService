@@ -83,7 +83,7 @@ export class AppComponent {
 
   connectToHub() {
     this.hubConnection = new signalR.HubConnectionBuilder()
-                              .withUrl(this.baseUrl + 'game', { accessTokenFactory: () => localStorage.getItem("token")! })
+                              .withUrl(this.baseUrl + 'game', { accessTokenFactory: () => sessionStorage.getItem("token")! })
                               .build();
 
     if(!this.hubConnection)

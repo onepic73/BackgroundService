@@ -32,15 +32,15 @@ export class AccountService {
       password : this.motDePasse
     }
     let result = await lastValueFrom(this.http.post<any>(this.accountBaseUrl + 'Login', registerData));
-    localStorage.setItem("token", result.token);
+    sessionStorage.setItem("token", result.token);
   }
 
   async logout(){
-    localStorage.removeItem("token");
+    sessionStorage.removeItem("token");
   }
 
   isLoggedIn() : Boolean{
-    return localStorage.getItem("token") != null;
+    return sessionStorage.getItem("token") != null;
   }
 
 }
