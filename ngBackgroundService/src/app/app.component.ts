@@ -105,7 +105,7 @@ export class AppComponent {
       this.nbClicks = 0;
       // TODO: Reset du multiplierCost et le multiplier
       this.multiplierCost = this.multiplierinitialCost
-      this.multiplicateur = 2;
+      this.multiplicateur = 1;
       // TODO: Si le joueur a gagné, on augmene nbWins
       if(data.winners.indexOf(this.account.username) >=0){
         this.nbWins++;
