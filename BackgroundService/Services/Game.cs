@@ -46,21 +46,20 @@ namespace BackgroundService.Services
         {
             UserData userData = _data[userId];
             // TODO: Ajouter la valeur du muliplier au lieu d'ajouter 1
-            userData.Score += 1 * userData.Multiplicateur;
+            userData.Score += userData.Multiplicateur;
         }
 
         // TODO: Ajouter une méthode pour acheter un multiplier. Le coût est le prix de base * le multiplier actuel
         // Les prix sont donc de 10, 20, 40, 80, 160 (Si le prix de base est 10)
         // Réduire le score du coût du multiplier
         // Doubler le multiplier du joueur
-        public void Multiplicateur(string userId)
+        public void AchatMultiplicateur(string userId)
         {
             UserData userData = _data[userId];
-            int multiplicateur = userData.Multiplicateur;
-            int countScore = 10 * multiplicateur;
+            int countScore = MULTIPLIER_BASE_PRICE * userData.Multiplicateur;
             if (userData.Score >= countScore)
             {
-                userData.Multiplicateur = multiplicateur * 2;
+                userData.Multiplicateur *= 2;
                 userData.Score -= countScore;
             }
         }
@@ -89,6 +88,8 @@ namespace BackgroundService.Services
             {
                 // TODO: On remet le multiplier à 1!
                 _data[key].Score = 0;
+                _data[key].Multiplicateur = 1;
+                
             }
 
             // Aucune participation!
@@ -110,8 +111,16 @@ namespace BackgroundService.Services
 
                 // TODO: Mettre à jour et sauvegarder le nbWinds des joueurs
 
+                List<Player> players = await backgroundServiceContext.Player.Where(p => winners.Contains(p.UserId)).ToListAsync();
+                foreach (var player in players)
+                {
+                    player.NbWins++;
+                }
+                await backgroundServiceContext.SaveChangesAsync();
+
                 List<IdentityUser> users = await backgroundServiceContext.Users.Where(u => winners.Contains(u.Id)).ToListAsync();
 
+                await backgroundServiceContext.SaveChangesAsync();
                 RoundResult roundResult = new RoundResult()
                 {
                     Winners = users.Select(p => p.UserName)!,

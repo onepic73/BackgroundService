@@ -29,8 +29,8 @@ namespace BackgroundService.Hubs
             await Clients.Caller.SendAsync("GameInfo", new GameInfoDTO()
             {
                 // TODO: Remplir l'information avec les 2 nouveaux features (nbWins et multiplierCost)
-
-                _game.
+                MultiplierCost = Game.MULTIPLIER_BASE_PRICE,
+                NbWins = player.NbWins
             });
         }
 
@@ -48,7 +48,7 @@ namespace BackgroundService.Hubs
         // Ajouter une méthode pour pouvoir acheter un multiplier
         public void MultiplicateurIncrement()
         {
-            _game.Multiplicateur(Context.UserIdentifier!);
+            _game.AchatMultiplicateur(Context.UserIdentifier!);
         }
     }
 }
